@@ -11,7 +11,10 @@ public class main {
         
         NFA nfa = JsonToNFA();
 
+        nfa.transitionSeparator();
+
         nfa.print();
+
 
         //nfa.dfaConverting();
         
@@ -22,6 +25,7 @@ public class main {
         ObjectMapper objectMapper= new ObjectMapper();
 
         NFA nfa=new NFA();
+
     try{
         nfa = objectMapper.readValue(new File("./nfa.json"), NFA.class);
         } catch (JsonProcessingException e){

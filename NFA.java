@@ -32,22 +32,48 @@ public class NFA {
 
     public void transitionSeparator() {
 
-        ArrayList<HashMap> doubleTransitions = new ArrayList<HashMap>();
+        ArrayList<HashMap> multipleTransitions = new ArrayList<HashMap>();
 
-        ArrayList<HashMap> newTransitionList = new ArrayList<HashMap>();
+        ArrayList<HashMap> newTransitions = new ArrayList<HashMap>();
 
-        for (int dfaStates = 0; dfaStates < transitions.size(); dfaStates++) {
+        for (HashMap transition : transitions) {
 
-            String s = transitions.get(dfaStates).get("with").toString();
-
-            if (s.length() > 1) {
-                doubleTransitions.add(transitions.get(dfaStates));
-                transitions.remove(dfaStates);
+            if (transition.get("with").toString().length() > 1) {
+                multipleTransitions.add(transition);
+            }
+            else{
+                newTransitions.add(transition);
             }
         }
-        for (int dfaStates = 0; dfaStates < doubleTransitions.size(); dfaStates++) {
+        for (HashMap multipleTransition : multipleTransitions) {
 
-            HashMap transitionTo = new HashMap<>(doubleTransitions.get(dfaStates));
+            int transitionLetters = multipleTransition.get("with").toString().length();
+
+            for(int letter=0; letter < transitionLetters; letter++){
+                HashMap singleTransition =new HashMap();
+
+                if(letter==0){
+                        singleTransition.put("from", multipleTransition.get("from"));
+                        singleTransition.put("with", multipleTransition.get("with").toString().charAt(letter));
+                        singleTransition.put("to", states.size()+1);
+                        states.add(states.size()+1);
+                }
+                if(letter==transitionLetters-1){
+                        singleTransition.put("from", states.size());
+                        singleTransition.put("with", multipleTransition.get("with").toString().charAt(letter));
+                        singleTransition.put("to", multipleTransition.get("to"));
+                }
+                if(letter !=0 && letter!=transitionLetters-1){
+                        singleTransition.put("from", states.size());
+                        singleTransition.put("with", multipleTransition.get("with").toString().charAt(letter));
+                        singleTransition.put("to", states.size()+1);
+                        states.add(states.size()+1);
+                }
+                newTransitions.add(singleTransition);
+
+            }
+
+            /*HashMap transitionTo = new HashMap<>(multipleTransitions.get(multipleTransition));
 
             String with = transitionTo.get("with").toString();
 
@@ -55,14 +81,16 @@ public class NFA {
             transitionTo.replace("with", with.charAt(0));
             transitions.add(transitionTo);
 
-            HashMap transitionFrom = new HashMap<>(doubleTransitions.get(dfaStates));
-            transitionFrom = doubleTransitions.get(dfaStates);
+            HashMap transitionFrom = new HashMap<>(multipleTransitions.get(multipleTransition));
+            transitionFrom = multipleTransitions.get(multipleTransition);
 
             transitionFrom.replace("from", states.size() + 1);
             transitionFrom.replace("with", with.charAt(1));
             transitions.add(transitionFrom);
 
-            states.add(states.size() + 1);
+            states.add(states.size() + 1); */
+
+            transitions = newTransitions;
         }
     }
 
@@ -122,5 +150,5 @@ public class NFA {
             }
         }
         System.out.println(dfa.states);
-    }
+    } 
 }
