@@ -11,7 +11,9 @@ public class main {
         
         NFA nfa = JsonToNFA();
 
-        nfa.dfaConverting();
+        nfa.print();
+
+        //nfa.dfaConverting();
         
     }
     

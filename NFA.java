@@ -34,18 +34,20 @@ public class NFA {
 
         ArrayList<HashMap> doubleTransitions = new ArrayList<HashMap>();
 
-        for (int i = 0; i < transitions.size(); i++) {
+        ArrayList<HashMap> newTransitionList = new ArrayList<HashMap>();
 
-            String s = transitions.get(i).get("with").toString();
+        for (int dfaStates = 0; dfaStates < transitions.size(); dfaStates++) {
+
+            String s = transitions.get(dfaStates).get("with").toString();
 
             if (s.length() > 1) {
-                doubleTransitions.add(transitions.get(i));
-                transitions.remove(i);
+                doubleTransitions.add(transitions.get(dfaStates));
+                transitions.remove(dfaStates);
             }
         }
-        for (int i = 0; i < doubleTransitions.size(); i++) {
+        for (int dfaStates = 0; dfaStates < doubleTransitions.size(); dfaStates++) {
 
-            HashMap transitionTo = new HashMap<>(doubleTransitions.get(i));
+            HashMap transitionTo = new HashMap<>(doubleTransitions.get(dfaStates));
 
             String with = transitionTo.get("with").toString();
 
@@ -53,8 +55,8 @@ public class NFA {
             transitionTo.replace("with", with.charAt(0));
             transitions.add(transitionTo);
 
-            HashMap transitionFrom = new HashMap<>(doubleTransitions.get(i));
-            transitionFrom = doubleTransitions.get(i);
+            HashMap transitionFrom = new HashMap<>(doubleTransitions.get(dfaStates));
+            transitionFrom = doubleTransitions.get(dfaStates);
 
             transitionFrom.replace("from", states.size() + 1);
             transitionFrom.replace("with", with.charAt(1));
@@ -78,26 +80,26 @@ public class NFA {
         dfa.states.add(dfaInitialState);
 
         // DFA állapotok
-        for (int i = 0; i < dfa.states.size(); i++) {
+        for (int dfaStates = 0; dfaStates < dfa.states.size(); dfaStates++) {
 
             
 
             // DFA állapoton belüli NFA állapotok
-            for (int j = 0; j < dfa.states.get(i).size(); j++) {
+            for (int nfaStates = 0; nfaStates < dfa.states.get(dfaStates).size(); nfaStates++) {
                 
 
                 // Alphabet
-                for (int k = 0; k < alphabet.size(); k++) {
+                for (int character = 0; character < alphabet.size(); character++) {
 
 
                     // Transitions
-                    for (int l = 0; l < transitions.size(); l++) {
+                    for (int transition = 0; transition < transitions.size(); transition++) {
                         
                         ArrayList<Integer> dfaState = new ArrayList<Integer>();
 
-                        if ((int) transitions.get(l).get("from") == dfa.states.get(i).get(j) && transitions.get(l).get("with").toString().equals(alphabet.get(k))) {
+                        if ((int) transitions.get(transition).get("from") == dfa.states.get(dfaStates).get(nfaStates) && transitions.get(transition).get("with").toString().equals(alphabet.get(character))) {
 
-                            int nfaState = (int) transitions.get(l).get("to");
+                            int nfaState = (int) transitions.get(transition).get("to");
 
                             if (!dfaState.contains(nfaState)) {
                                 dfaState.add(nfaState);
