@@ -5,4 +5,5 @@
 
 ## futtatás: 
  javac -cp .;./jackson-annotations-2.12.2.jar;./jackson-core-2.12.2.jar;./jackson-databind-2.12.2.jar *.java
+ 
  java -cp .;./jackson-annotations-2.12.2.jar;./jackson-core-2.12.2.jar;./jackson-databind-2.12.2.jar main
