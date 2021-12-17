@@ -73,22 +73,6 @@ public class NFA {
 
             }
 
-            /*HashMap transitionTo = new HashMap<>(multipleTransitions.get(multipleTransition));
-
-            String with = transitionTo.get("with").toString();
-
-            transitionTo.replace("to", states.size() + 1);
-            transitionTo.replace("with", with.charAt(0));
-            transitions.add(transitionTo);
-
-            HashMap transitionFrom = new HashMap<>(multipleTransitions.get(multipleTransition));
-            transitionFrom = multipleTransitions.get(multipleTransition);
-
-            transitionFrom.replace("from", states.size() + 1);
-            transitionFrom.replace("with", with.charAt(1));
-            transitions.add(transitionFrom);
-
-            states.add(states.size() + 1); */
 
             transitions = newTransitions;
         }
