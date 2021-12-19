@@ -15,11 +15,11 @@ public class main {
 
         nfa.print();
 
-
-        //nfa.dfaConverting();
+        nfa.dfaConverting();
         
     }
     
+    //Json beolvasás
     public static NFA JsonToNFA(){
 
         ObjectMapper objectMapper= new ObjectMapper();

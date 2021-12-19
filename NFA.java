@@ -9,7 +9,7 @@ public class NFA {
     @JsonProperty("states")
     ArrayList<Integer> states;
     @JsonProperty("alphabet")
-    ArrayList alphabet;
+    ArrayList<Character> alphabet;
     @JsonProperty("transitions")
     ArrayList<HashMap> transitions;
     @JsonProperty("initialState")
@@ -70,10 +70,7 @@ public class NFA {
                         states.add(states.size()+1);
                 }
                 newTransitions.add(singleTransition);
-
             }
-
-
             transitions = newTransitions;
         }
     }
@@ -92,42 +89,38 @@ public class NFA {
         dfa.states.add(dfaInitialState);
 
         // DFA állapotok
-        for (int dfaStates = 0; dfaStates < dfa.states.size(); dfaStates++) {
-
-            
+        for (int dfaState=0; dfaState<dfa.states.size(); dfaState++) {
 
             // DFA állapoton belüli NFA állapotok
-            for (int nfaStates = 0; nfaStates < dfa.states.get(dfaStates).size(); nfaStates++) {
+            for (int nfaState=0; nfaState<dfa.states.get(dfaState).size(); nfaState++) {
+
+                ArrayList<Integer> newDfaState = new ArrayList<Integer>();
+
+                 // Transitions
+                 for (HashMap transition : transitions) {   
                 
-
-                // Alphabet
-                for (int character = 0; character < alphabet.size(); character++) {
-
-
-                    // Transitions
-                    for (int transition = 0; transition < transitions.size(); transition++) {
+                    // Alphabet
+                    for (char character : alphabet) {                    
                         
-                        ArrayList<Integer> dfaState = new ArrayList<Integer>();
+                        if ((int) transition.get("from") == dfa.states.get(dfaState).get(nfaState) && transition.get("with").equals(character)) {
 
-                        if ((int) transitions.get(transition).get("from") == dfa.states.get(dfaStates).get(nfaStates) && transitions.get(transition).get("with").toString().equals(alphabet.get(character))) {
-
-                            int nfaState = (int) transitions.get(transition).get("to");
-
-                            if (!dfaState.contains(nfaState)) {
-                                dfaState.add(nfaState);
+                            //Ellenőrzi hogy szerepel e már a DFA state-ben az NFA state
+                            if (newDfaState.contains(transition.get("to"))) {
+                                newDfaState.add((int)transition.get("to"));
                             }
-
+                            
+                            //Ellenőrzi hogy az NFA state-ből tovább lehet e lépni empty-vel
                             for (int m = 0; m < transitions.size(); m++) {
 
-                                if (transitions.get(m).get("with").toString() == "" && (int) transitions.get(m).get("from") == nfaState);
+                                if (transitions.get(m).get("with").toString() == "" && (int) transitions.get(m).get("from") == (int) transition.get("to"));
 
-                                if (!dfaState.contains((int) transitions.get(m).get("to"))) {
-                                    dfaState.add((int) transitions.get(m).get("to"));
+                                if (!newDfaState.contains( transitions.get(m).get("to"))) {
+                                    newDfaState.add((int) transitions.get(m).get("to"));
                                 }
                             }
                         }
-                            if (!dfa.states.contains(dfaState)) {
-                                dfa.states.add(dfaState);
+                            if (!dfa.states.contains(newDfaState)) {
+                                dfa.states.add(newDfaState);
                         }
                     }
                 }
@@ -135,4 +128,5 @@ public class NFA {
         }
         System.out.println(dfa.states);
     } 
+
 }
