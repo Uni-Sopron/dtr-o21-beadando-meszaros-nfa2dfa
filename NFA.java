@@ -15,21 +15,25 @@ public class NFA {
     @JsonProperty("initialState")
     int initialState;
     @JsonProperty("acceptingStates")
-    ArrayList acceptingStates;
+    ArrayList<Integer> acceptingStates;
 
     // Json beolvasáshoz kell
     public NFA() {
 
     }
 
+    // Fontos információkat kiírja konzolra az NFA-ról
     public void print() {
+        System.out.println("Az NFA: ");
         System.out.println(states);
         System.out.println(alphabet);
         System.out.println(transitions);
         System.out.println(initialState);
         System.out.println(acceptingStates);
+        System.out.println("");
     }
 
+    // Szétválasztja azokat az átmeneteket ahol több betű is van
     public void transitionSeparator() {
 
         ArrayList<HashMap> multipleTransitions = new ArrayList<HashMap>();
@@ -75,13 +79,71 @@ public class NFA {
         }
     }
 
-    public void dfaConverting() {
+    //Új DFA állapotokat keres
+    public  ArrayList<Integer> dfaStateFinder(ArrayList<Integer> existingDfaSate, char letter){
+
+        ArrayList<Integer> newDfaState = new ArrayList<Integer>();
+
+        // DFA állapoton belüli NFA állapotok
+        for (int nfaState : existingDfaSate) {
+
+             // Transitions
+             for (HashMap transition : transitions) {
+
+                    //Ellenőrzi hogy a from állapot és a betű egyezik e. Csak így tudtam char-t Stringgel összhasonlítani. 
+                    if ((int) transition.get("from") == nfaState && transition.get("with").toString().equals(String.valueOf(letter))) {
+
+                        //hozzáadja a to értékét a transition-nek ha még nem tartalmazta
+                        if(!newDfaState.contains((int) transition.get("to"))){
+                            newDfaState.add((int) transition.get("to"));
+                        }                       
+                }
+            }
+            // Ellenőrzi hogy az NFA state-ből tovább lehet e lépni empty-vel
+            for (HashMap transition2: transitions) {
+
+                for (int dfaElement=0; dfaElement<newDfaState.size(); dfaElement++){
+
+                    if ( transition2.get("with").toString().length()==0 && (int) transition2.get("from") == newDfaState.get(dfaElement)){
+
+                        //hozzáadja a to értékét a transition2-nek ha még nem tartalmazta
+                        if(!newDfaState.contains((int) transition2.get("to"))){
+                                newDfaState.add((int) transition2.get("to"));
+                        }
+                    }
+                }
+            } 
+        }
+        return newDfaState;
+    }
+
+    //Elfogadó állapotokat keres a DFA állapotokban
+    public ArrayList<Integer> acceptingStateFinder(ArrayList<ArrayList<Integer>> dfaStates){
+
+        ArrayList<Integer> acceptingDfaStates = new ArrayList<Integer>();
+
+        for (ArrayList<Integer> dfaState : dfaStates) {
+
+            for(int acceptingState : acceptingStates ){
+
+                if(dfaState.contains(acceptingState)){
+                    acceptingDfaStates.add(dfaStates.indexOf(dfaState)+1);
+                }
+
+            }            
+        }
+        return acceptingDfaStates;
+    }
+
+
+    // DFA-vá alakítja az NFA-t
+    public DFA dfaConverting() {
 
         transitionSeparator();
 
-        print();
-
         DFA dfa = new DFA();
+
+        dfa.alphabet = alphabet;
 
         ArrayList<Integer> dfaInitialState = new ArrayList<Integer>();
         dfaInitialState.add(initialState);
@@ -91,42 +153,28 @@ public class NFA {
         // DFA állapotok
         for (int dfaState=0; dfaState<dfa.states.size(); dfaState++) {
 
-            // DFA állapoton belüli NFA állapotok
-            for (int nfaState=0; nfaState<dfa.states.get(dfaState).size(); nfaState++) {
+            for(char letter : alphabet){
 
-                ArrayList<Integer> newDfaState = new ArrayList<Integer>();
+                ArrayList<Integer> newDfaState = dfaStateFinder( dfa.states.get(dfaState), letter);
 
-                 // Transitions
-                 for (HashMap transition : transitions) {   
-                
-                    // Alphabet
-                    for (char character : alphabet) {                    
-                        
-                        if ((int) transition.get("from") == dfa.states.get(dfaState).get(nfaState) && transition.get("with").equals(character)) {
+                if(!dfa.states.contains(newDfaState)){
+                    dfa.states.add(newDfaState);
 
-                            //Ellenőrzi hogy szerepel e már a DFA state-ben az NFA state
-                            if (newDfaState.contains(transition.get("to"))) {
-                                newDfaState.add((int)transition.get("to"));
-                            }
-                            
-                            //Ellenőrzi hogy az NFA state-ből tovább lehet e lépni empty-vel
-                            for (int m = 0; m < transitions.size(); m++) {
+                        //Elmenti az új DFA transition-t.
+                        HashMap newTransition = new HashMap<>();
+                                
+                        newTransition.put("with", letter);
+                        newTransition.put("from", dfaState+1);
+                        newTransition.put("to", dfa.states.indexOf(newDfaState)+1);
 
-                                if (transitions.get(m).get("with").toString() == "" && (int) transitions.get(m).get("from") == (int) transition.get("to"));
-
-                                if (!newDfaState.contains( transitions.get(m).get("to"))) {
-                                    newDfaState.add((int) transitions.get(m).get("to"));
-                                }
-                            }
-                        }
-                            if (!dfa.states.contains(newDfaState)) {
-                                dfa.states.add(newDfaState);
-                        }
-                    }
+                        dfa.transitions.add(newTransition);
                 }
-            }
+            }           
         }
-        System.out.println(dfa.states);
-    } 
 
+        dfa.acceptingStates = acceptingStateFinder(dfa.states);
+
+        return dfa;
+        
+    } 
 }

@@ -11,11 +11,11 @@ public class main {
         
         NFA nfa = JsonToNFA();
 
-        nfa.transitionSeparator();
-
         nfa.print();
 
-        nfa.dfaConverting();
+        DFA dfa = nfa.dfaConverting();
+
+        dfa.print();
         
     }
     
@@ -27,7 +27,7 @@ public class main {
         NFA nfa=new NFA();
 
     try{
-        nfa = objectMapper.readValue(new File("./nfa.json"), NFA.class);
+        nfa = objectMapper.readValue(new File("./nfa_2.json"), NFA.class);
         } catch (JsonProcessingException e){
             System.out.println("JsonProcessingException");
             System.out.println(e.getMessage());
