@@ -159,16 +159,15 @@ public class NFA {
 
                 if(!dfa.states.contains(newDfaState)){
                     dfa.states.add(newDfaState);
-
-                        //Elmenti az új DFA transition-t.
-                        HashMap newTransition = new HashMap<>();
-                                
-                        newTransition.put("with", letter);
-                        newTransition.put("from", dfaState+1);
-                        newTransition.put("to", dfa.states.indexOf(newDfaState)+1);
-
-                        dfa.transitions.add(newTransition);
                 }
+                //Elmenti az új DFA transition-t.
+                HashMap newTransition = new HashMap<>();
+                                
+                newTransition.put("with", letter);
+                newTransition.put("from", dfaState+1);
+                newTransition.put("to", dfa.states.indexOf(newDfaState)+1);
+
+                dfa.transitions.add(newTransition);
             }           
         }
 
