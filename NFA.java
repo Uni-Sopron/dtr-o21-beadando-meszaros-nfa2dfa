@@ -153,7 +153,7 @@ public class NFA {
         ArrayList<Integer> dfaInitialState = new ArrayList<Integer>();
         dfaInitialState.add(initialState);
 
-        dfa.states.add(dfaInitialState);
+        dfa.states.add(emptyClosure(dfaInitialState));
 
         // DFA állapotok
         for (int dfaState=0; dfaState<dfa.states.size(); dfaState++) {
