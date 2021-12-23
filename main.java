@@ -11,9 +11,11 @@ public class main {
         
         NFA nfa = JsonToNFA();
 
+        nfa.splitLongTransitions();
+
         nfa.print();
 
-        DFA dfa = nfa.dfaConverting();
+        DFA dfa = nfa.getEquivalentDFA();
 
         dfa.print();
         

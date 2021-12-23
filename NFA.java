@@ -34,7 +34,7 @@ public class NFA {
     }
 
     // Szétválasztja azokat az átmeneteket ahol több betű is van
-    public void transitionSeparator() {
+    public void splitLongTransitions() {
 
         ArrayList<HashMap> multipleTransitions = new ArrayList<HashMap>();
 
@@ -54,7 +54,8 @@ public class NFA {
             int transitionLetters = multipleTransition.get("with").toString().length();
 
             for(int letter=0; letter < transitionLetters; letter++){
-                HashMap singleTransition =new HashMap();
+
+                HashMap singleTransition = new HashMap();
 
                 if(letter==0){
                         singleTransition.put("from", multipleTransition.get("from"));
@@ -62,12 +63,12 @@ public class NFA {
                         singleTransition.put("to", states.size()+1);
                         states.add(states.size()+1);
                 }
-                if(letter==transitionLetters-1){
+                else if(letter==transitionLetters-1){
                         singleTransition.put("from", states.size());
                         singleTransition.put("with", multipleTransition.get("with").toString().charAt(letter));
                         singleTransition.put("to", multipleTransition.get("to"));
                 }
-                if(letter !=0 && letter!=transitionLetters-1){
+                else{
                         singleTransition.put("from", states.size());
                         singleTransition.put("with", multipleTransition.get("with").toString().charAt(letter));
                         singleTransition.put("to", states.size()+1);
@@ -80,7 +81,7 @@ public class NFA {
     }
 
     //Új DFA állapotokat keres
-    public  ArrayList<Integer> dfaStateFinder(ArrayList<Integer> existingDfaSate, char letter){
+    ArrayList<Integer> calculateSimulatedDFAState(ArrayList<Integer> existingDfaSate, char letter){
 
         ArrayList<Integer> newDfaState = new ArrayList<Integer>();
 
@@ -99,22 +100,27 @@ public class NFA {
                         }                       
                 }
             }
-            // Ellenőrzi hogy az NFA state-ből tovább lehet e lépni empty-vel
-            for (HashMap transition2: transitions) {
+        }
+        return newDfaState;
+    }
 
-                for (int dfaElement=0; dfaElement<newDfaState.size(); dfaElement++){
+    // Ellenőrzi hogy az NFA state-ből tovább lehet e lépni empty-vel
+    ArrayList<Integer> emptyClosure (ArrayList<Integer> dfaState){
 
-                    if ( transition2.get("with").toString().length()==0 && (int) transition2.get("from") == newDfaState.get(dfaElement)){
+        for (HashMap transition2: transitions) {
+
+                for (int dfaElement=0; dfaElement<dfaState.size(); dfaElement++){
+
+                    if ( transition2.get("with").toString().length()==0 && (int) transition2.get("from") == dfaState.get(dfaElement)){
 
                         //hozzáadja a to értékét a transition2-nek ha még nem tartalmazta
-                        if(!newDfaState.contains((int) transition2.get("to"))){
-                                newDfaState.add((int) transition2.get("to"));
+                        if(!dfaState.contains((int) transition2.get("to"))){
+                                dfaState.add((int) transition2.get("to"));
                         }
                     }
                 }
-            } 
-        }
-        return newDfaState;
+            }
+        return dfaState;
     }
 
     //Elfogadó állapotokat keres a DFA állapotokban
@@ -129,7 +135,6 @@ public class NFA {
                 if(dfaState.contains(acceptingState)){
                     acceptingDfaStates.add(dfaStates.indexOf(dfaState)+1);
                 }
-
             }            
         }
         return acceptingDfaStates;
@@ -137,9 +142,9 @@ public class NFA {
 
 
     // DFA-vá alakítja az NFA-t
-    public DFA dfaConverting() {
+    public DFA getEquivalentDFA() {
 
-        transitionSeparator();
+        splitLongTransitions();
 
         DFA dfa = new DFA();
 
@@ -155,7 +160,7 @@ public class NFA {
 
             for(char letter : alphabet){
 
-                ArrayList<Integer> newDfaState = dfaStateFinder( dfa.states.get(dfaState), letter);
+                ArrayList<Integer> newDfaState = emptyClosure(calculateSimulatedDFAState( dfa.states.get(dfaState), letter));
 
                 if(!dfa.states.contains(newDfaState)){
                     dfa.states.add(newDfaState);
