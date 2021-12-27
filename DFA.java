@@ -8,7 +8,7 @@ public class DFA {
     public ArrayList<Integer> acceptingStates = new ArrayList<Integer>();
 
     public void print(){
-        System.out.println("A DFA: ");
+        System.out.println("The DFA: ");
         System.out.println(states);
         System.out.println(alphabet);
         System.out.println(transitions);

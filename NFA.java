@@ -24,7 +24,7 @@ public class NFA {
 
     // Fontos információkat kiírja konzolra az NFA-ról
     public void print() {
-        System.out.println("Az NFA: ");
+        System.out.println("The NFA: ");
         System.out.println(states);
         System.out.println(alphabet);
         System.out.println(transitions);
