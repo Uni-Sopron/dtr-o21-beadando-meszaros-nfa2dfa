@@ -4,7 +4,7 @@ A program NFA-t álakít át DFA-vá. Az NFA-at JSON fileból olvassa be, a fáj
 
 This program converts NFA to DFA. Reads the NFA from a JSON file, the file name is specified via command line. The converted DFA is exported to a JSON file and the name of the DFA JSON file is also specified via command line. The example_nfa.json file is an example of the expected file format. The NFA JSON file should be in the programs folder. 
 
-## Könyvtárak -Libraries:
+## Könyvtárak - Libraries:
 
 Jackson library-t használtam a json beolvasáshoz és írásához, a három .jar fájl kell a program futtatásához. 
 
